@@ -1,9 +1,9 @@
-import { stringify } from 'querystring';
+
 import type { Reducer, Effect } from 'umi';
 import { history } from 'umi';
 
-import { fakeAccountLogin } from '@/services/login';
-import { getPageQuery } from '@/utils/utils';
+import { fakeAccountLogin ,outAccountLogin} from '@/services/login';
+;
 import { message } from 'antd';
 
 export type StateType = {
@@ -49,18 +49,25 @@ const Model: LoginModelType = {
      
     },
 
-    logout() {
-      const { redirect } = getPageQuery();
-      // Note: There may be security issues, please note
-      if (window.location.pathname !== '/user/login' && !redirect) {
-        history.replace({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        });
+    *logout(_,{call}) {
+      //loading
+     const load=message.loading('退出中...')
+      //请求Api,退出登录
+      const response=yield call(outAccountLogin)
+      //判断是否请求成功
+      if(response.status===undefined){
+        // 删除本地的token和useInfo
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('userInfo')
+        //重定向到登录
+        history.replace( '/login');
+        message.success('✨ ✨ ✨  退出成功！');
       }
+
+      load()
     },
+
+   
   },
 
   reducers: {

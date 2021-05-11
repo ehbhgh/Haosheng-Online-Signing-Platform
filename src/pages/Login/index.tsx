@@ -3,9 +3,9 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Alert, Tabs } from 'antd';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import ProForm, {  ProFormText } from '@ant-design/pro-form';
-import { useIntl, connect } from 'umi';
+import { useIntl, connect,history } from 'umi';
 import type { Dispatch } from 'umi';
 import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
@@ -38,6 +38,12 @@ const Login: React.FC<LoginProps> = (props) => {
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
 
+  useEffect(() => {
+    //判断用户是否登录，如果登录则重定向到首页
+    const userInfo=localStorage.getItem('userInfo')
+    if(userInfo) history.replace('/')
+
+  }, [])
   const handleSubmit = (values: LoginParamsType) => {
     const { dispatch } = props;
     console.log(values);

@@ -22,8 +22,16 @@
             path: '/',
             component: '../layouts/BasicLayout',
             routes: [
+               
               {
                 path: '/',
+                redirect:'/dashboard'
+              },
+              {
+                path: '/dashboard',
+                name:'dashboard',
+                icon:'PicCenterOutlined',
+                component:'@/pages/Dashboard'
               },
              
               
