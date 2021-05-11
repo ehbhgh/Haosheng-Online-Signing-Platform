@@ -5,7 +5,7 @@ import {
 import { Alert, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, {  ProFormText } from '@ant-design/pro-form';
-import { useIntl, connect, FormattedMessage } from 'umi';
+import { useIntl, connect } from 'umi';
 import type { Dispatch } from 'umi';
 import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
@@ -40,6 +40,8 @@ const Login: React.FC<LoginProps> = (props) => {
 
   const handleSubmit = (values: LoginParamsType) => {
     const { dispatch } = props;
+    console.log(values);
+    
     dispatch({
       type: 'login/login',
       payload: { ...values, type },
@@ -88,25 +90,22 @@ const Login: React.FC<LoginProps> = (props) => {
        
           
             <ProFormText
-              name="userName"
+              name="email"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: 'Username: admin or user',
-              })}
+              placeholder= '邮箱：super@a.com'
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="Please enter user name!"
-                    />
-                  ),
+                  message:"请输入邮箱!"
+                  
                 },
+                {
+                  type:'email',
+                  message:'请输入正确的邮箱格式'
+                }
               ]}
             />
             <ProFormText.Password
@@ -115,19 +114,11 @@ const Login: React.FC<LoginProps> = (props) => {
                 size: 'large',
                 prefix: <LockOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.password.placeholder',
-                defaultMessage: 'Password: ant.design',
-              })}
+              placeholder='密码: 123123'
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: '请输入密码！'
                 },
               ]}
             />

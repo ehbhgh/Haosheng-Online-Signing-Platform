@@ -1,6 +1,6 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import {message } from 'antd';
 
 const codeMessage: Record<number, string> = {
   200: '服务器成功返回请求的数据。',
@@ -24,21 +24,50 @@ const codeMessage: Record<number, string> = {
  * @zh-CN 异常处理程序
  * @en-US Exception handler
  */
-const errorHandler = (error: { response: Response }): Response => {
+// const errorHandler = (error: { response: Response }): Response => {
+//   const { response } = error;
+//   if (response && response.status) {
+//     const errorText = codeMessage[response.status] || response.statusText;
+//     const { status, url } = response;
+
+//     notification.error({
+//       message: `Request error ${status}: ${url}`,
+//       description: errorText,
+//     });
+//   } else if (!response) {
+//     notification.error({
+//       description: 'Your network is abnormal and cannot connect to the server',
+//       message: 'Network anomaly',
+//     });
+//   }
+//   return response;
+// };
+
+const errorHandler = async (error: { response: Response }): Response => {
   const { response } = error;
   if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
+  let errorText = codeMessage[response.status] || response.statusText;
+    const { status } = response;
 
-    notification.error({
-      message: `Request error ${status}: ${url}`,
-      description: errorText,
-    });
+  const res=await response.json()
+  
+  //处理422
+    if(status===422){
+    let err=''
+    for(let key in res.errors){
+        err+=res.errors[key][0]
+    }
+    errorText+=`[${err}]`
+      message.error( errorText)
+    }
+//处理400
+    if(status===400){
+      errorText+=`[${res.message}]`
+    message.error( errorText)
+    }
+    
   } else if (!response) {
-    notification.error({
-      description: 'Your network is abnormal and cannot connect to the server',
-      message: 'Network anomaly',
-    });
+    message.error('网络发生异常，无法连接服务器')
   }
   return response;
 };
@@ -50,6 +79,19 @@ const errorHandler = (error: { response: Response }): Response => {
 const request = extend({
   errorHandler, // default error handling
   credentials: 'include', // Does the default request bring cookies
+  prefix:'/api'
 });
 
+//用请求拦截器去给头部添加一个toke
+request.interceptors.request.use((url, options) => {
+  //获取token
+  const token=localStorage.getItem('access_token')||''
+  const headers={
+    Authorization:'Bearer '+token
+  }
+  return {
+    url,
+    options: { ...options, headers},
+  };
+});
 export default request;

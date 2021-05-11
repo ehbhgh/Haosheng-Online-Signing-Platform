@@ -3,7 +3,7 @@ import type { Effect, Reducer } from 'umi';
 import { queryCurrent, query as queryUsers } from '@/services/user';
 
 export type CurrentUser = {
-  avatar?: string;
+  avatar_url?: string;
   name?: string;
   title?: string;
   group?: string;
