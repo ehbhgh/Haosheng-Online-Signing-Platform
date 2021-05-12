@@ -6,7 +6,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { getUsers, changeStatus,addUsers } from '@/services/user';
 import Create from './components/Create'
-
+import Edit from './components/Edit'
 type GithubIssueItem = {
   url: string;
   id: number;
@@ -25,6 +25,8 @@ type GithubIssueItem = {
 const User = () => {
   const actionRef = useRef<ActionType>();
   const [isModalVisible, setisModalVisible] = useState(false);
+  const [ModalVisibleEdit, setModalVisibleEdit] = useState(false);
+  const [uid,setUid]=useState(undefined)
   const getData = async (params: any) => {
     let res = await getUsers(params);
     return { data: res.data, success: true, total: res.meta.pagination.total };
@@ -44,7 +46,10 @@ const User = () => {
     setisModalVisible(isShow)
   };
 
-
+  const editModel= (isShow:any,uid:any) => {
+    setModalVisibleEdit(isShow)
+    setUid(uid)
+  };
   const columns: ProColumns<GithubIssueItem>[]= [
     {
       title: '头像',
@@ -75,7 +80,7 @@ const User = () => {
       dataIndex: 'is_locked',
       hideInSearch: true,
       render: (_: any, record: any) => (
-        <a href="" onChange={() => {}}>
+        <a  onClick={() => {editModel(true,record.id)}}>
           编辑
         </a>
       ),
@@ -102,8 +107,9 @@ const User = () => {
           </Button>,
         ]}
       />
-<Create isModalVisible={isModalVisible} handleCancel={handleCancel}  actionRef={actionRef}/>
-    
+       <Create isModalVisible={isModalVisible} handleCancel={handleCancel}  actionRef={actionRef}/>
+       {/* 当组件显示时才挂载 */}
+ {      ModalVisibleEdit? <Edit ModalVisibleEdit={ModalVisibleEdit} editModel={editModel}  actionRef={actionRef} uid={uid}/>:''}
     </PageHeaderWrapper  >
   );
 };
