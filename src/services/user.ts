@@ -22,3 +22,8 @@ export async function getUsers(params:any): Promise<any> {
 export async function changeStatus(uid:any): Promise<any> {
   return request.patch(`/admin/users/${uid}/lock`);
 }
+
+//添加用户列表
+export async function addUsers(params:any): Promise<any> {
+  return request.post('/admin/users',{params});
+}
