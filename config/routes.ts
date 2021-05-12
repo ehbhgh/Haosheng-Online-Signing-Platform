@@ -33,6 +33,12 @@
                 icon:'PicCenterOutlined',
                 component:'@/pages/Dashboard'
               },
+              {
+                path: '/user',
+                name:'user',
+                icon:'UserOutlined',
+                component:'@/pages/User'
+              },
              
               
               {

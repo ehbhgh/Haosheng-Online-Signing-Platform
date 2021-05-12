@@ -12,3 +12,13 @@ export async function queryCurrent(): Promise<any> {
 export async function queryNotices(): Promise<any> {
   return request('/api/notices');
 }
+
+//获取用户列表
+export async function getUsers(params:any): Promise<any> {
+  return request('/admin/users',{params});
+}
+
+//改变禁用状态
+export async function changeStatus(uid:any): Promise<any> {
+  return request.patch(`/admin/users/${uid}/lock`);
+}
