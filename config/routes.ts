@@ -39,7 +39,12 @@
                 icon:'UserOutlined',
                 component:'@/pages/User'
               },
-             
+              {
+                path: '/goods',
+                name:'goods',
+                icon:'ShoppingCartOutlined',
+                component:'@/pages/Goods'
+              },
               
               {
                 component: './404',
