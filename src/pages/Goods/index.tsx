@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { PlusOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Image, Switch, message, Modal, Skeleton } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Image, Switch, message } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { getGoods, isRecommend, isOn, detailGoods } from '@/services/goods';

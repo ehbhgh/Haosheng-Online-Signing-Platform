@@ -19,11 +19,11 @@ const Dashboard = () => {
    const data = await dashHttp()
    setData(data)
     let {users_count,goods_count,order_count}=data
-    let myChart1 = echarts.init(document.getElementById('main1'));
+    let myChart1= echarts.init(document.getElementById('main1')as HTMLInputElement);
     showData(myChart1,users_count,'user')
-    let myChart2 = echarts.init(document.getElementById('main2'));
+    let myChart2 = echarts.init(document.getElementById('main2')as HTMLInputElement);
     showData(myChart2,goods_count,'shopping')
-    let myChart3= echarts.init(document.getElementById('main3'));
+    let myChart3= echarts.init(document.getElementById('main3')as HTMLInputElement);
     showData(myChart3,order_count,'order')
   };
 

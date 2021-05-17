@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Upload, message,Button} from 'antd';
+import { Upload, message} from 'antd';
 
 import {ossConfig }from '@/services/common'
 
@@ -40,7 +40,7 @@ getExtraData = (file:any) => {
   onChange = ({ file }:any) => {
    if(file.status==='done'){
    if( this.props.setCoverKey)this.props.setCoverKey(file.key)
-   console.log('fffrrrr');
+   
    
    this.props.setFlag(false)
     //上传成功过后，把文件的key,设置某个字段的值

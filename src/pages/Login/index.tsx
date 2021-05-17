@@ -34,7 +34,7 @@ const LoginMessage: React.FC<{
 
 const Login: React.FC<LoginProps> = (props) => {
   const { userLogin = {}, submitting } = props;
-  const { status, type: loginType } = userLogin;
+  const { status } = userLogin;
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
 
