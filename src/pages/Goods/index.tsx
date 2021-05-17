@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { PlusOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Image, Switch, message, Modal,Skeleton } from 'antd';
+import { Button, Image, Switch, message, Modal, Skeleton } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { getGoods,isRecommend,isOn } from '@/services/goods';
+import { getGoods, isRecommend, isOn, detailGoods } from '@/services/goods';
 import { getCategory } from '@/services/category';
 import Create from './components/Create';
 import Edit from './components/Edit';
@@ -23,16 +23,18 @@ type GithubIssueItem = {
   created_at: string;
   updated_at: string;
   closed_at?: string;
-  price:number,
-  stock:number,
-  sales:number
+  price: number;
+  stock: number;
+  sales: number;
 };
 const User = () => {
   const actionRef = useRef<ActionType>();
   const [isModalVisible, setisModalVisible] = useState(false);
   const [ModalVisibleEdit, setModalVisibleEdit] = useState(false);
+  const [deatilStatus, setGoodsDetailAtatus] = useState(false);
   const [uid, setUid] = useState(undefined);
-  const [cateData,setcateData]= useState([]);
+  const [cateData, setcateData] = useState([]);
+  const [goodsDetail, setGoodsDetail] = useState([]);
   const getData = async (params: any) => {
     let res = await getGoods(params);
     return { data: res.data, success: true, total: res.meta.pagination.total };
@@ -40,32 +42,44 @@ const User = () => {
 
   //是否上架
   const isOnHangdle = async (uid: any) => {
-    const res=await isOn(uid)
-    if(res.status===undefined)message.success('操作成功')
+    const res = await isOn(uid);
+    if (res.status === undefined) message.success('操作成功');
   };
-//是否推荐
-const isRecommendHandle = async (uid: any) => {
-  const res=await isRecommend(uid)
-  if(res.status===undefined)message.success('操作成功')
-};
-//获取分类数据
+  //是否推荐
+  const isRecommendHandle = async (uid: any) => {
+    const res = await isRecommend(uid);
+    if (res.status === undefined) message.success('操作成功');
+  };
+  //获取分类数据
 
   //隐藏model
-  const handleCancel = async(isShow: any) => {
+  const handleCancel = async (isShow: any) => {
     const res = await getCategory();
     if (res.status === undefined) {
-      console.log(res,'yyyyy');
-      
-      setcateData(res)
+      setcateData(res);
       setisModalVisible(isShow);
     }
-
-  
   };
 
-  const editModel = (isShow: any, uid: any) => {
-    setModalVisibleEdit(isShow);
-    setUid(uid);
+  const editModel = async (isShow: any, uid: any,title:any) => {
+    const res = await getCategory();
+    if (res.status === undefined) {
+      setcateData(res);
+      setModalVisibleEdit(isShow);
+      setUid(uid);
+    }
+    if(title==='编辑'){
+      const goodsRes = await detailGoods(uid);
+      if(goodsRes){
+          const {pid,id}=goodsRes.category
+          const defaultCategory=pid===0?[id]:[pid,id]
+         setGoodsDetail({...goodsRes,category_id:defaultCategory});
+        setGoodsDetailAtatus(true)
+      }
+    
+
+    }
+
   };
   const columns: ProColumns<GithubIssueItem>[] = [
     {
@@ -80,14 +94,32 @@ const isRecommendHandle = async (uid: any) => {
         />
       ),
     },
-    { title: '商品名', dataIndex: 'title',copyable:true  },
-    { title: '商品价格', dataIndex: 'price', hideInSearch: true, copyable:false, sorter: (a, b) => a.price - b.price},
-    { title: '商品库存', dataIndex: 'stock', hideInSearch: true,copyable:false, sorter: (a, b) => a.stock - b.stock} ,
-    { title: '商品销量', dataIndex: 'sales', hideInSearch: true,copyable:false, sorter: (a, b) => a.sales - b.sales} ,
+    { title: '商品名', dataIndex: 'title', copyable: true },
+    {
+      title: '商品价格',
+      dataIndex: 'price',
+      hideInSearch: true,
+      copyable: false,
+      sorter: (a, b) => a.price - b.price,
+    },
+    {
+      title: '商品库存',
+      dataIndex: 'stock',
+      hideInSearch: true,
+      copyable: false,
+      sorter: (a, b) => a.stock - b.stock,
+    },
+    {
+      title: '商品销量',
+      dataIndex: 'sales',
+      hideInSearch: true,
+      copyable: false,
+      sorter: (a, b) => a.sales - b.sales,
+    },
     {
       title: '是否上架',
       dataIndex: 'is_on',
-    
+
       render: (_: any, record: any) => (
         <Switch
           checkedChildren="已上架"
@@ -127,7 +159,7 @@ const isRecommendHandle = async (uid: any) => {
       render: (_: any, record: any) => (
         <a
           onClick={() => {
-            editModel(true, record.id);
+            editModel(true, record.id,'编辑');
           }}
         >
           编辑
@@ -161,15 +193,23 @@ const isRecommendHandle = async (uid: any) => {
           </Button>,
         ]}
       />
-  <Create isModalVisible={isModalVisible} handleCancel={handleCancel} actionRef={actionRef} cateData={cateData}/>
-    
+      <Create
+        isModalVisible={isModalVisible}
+        handleCancel={handleCancel}
+        actionRef={actionRef}
+        cateData={cateData}
+      />
+
       {/* 当组件显示时才挂载 */}
-      {ModalVisibleEdit ? (
+      {ModalVisibleEdit&&deatilStatus ? (
         <Edit
           ModalVisibleEdit={ModalVisibleEdit}
           editModel={editModel}
           actionRef={actionRef}
           uid={uid}
+          cateData={cateData}
+          goodsDetail={goodsDetail}
+          setModalVisibleEdit={setModalVisibleEdit}
         />
       ) : (
         ''

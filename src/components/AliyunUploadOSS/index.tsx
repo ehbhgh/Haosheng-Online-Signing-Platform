@@ -1,6 +1,6 @@
 import React from 'react';
 import {  Upload, message,Button} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+
 import {ossConfig }from '@/services/common'
 
 class AliyunOSSUpload extends React.Component{
@@ -39,11 +39,19 @@ getExtraData = (file:any) => {
   //文件上传过程中触发的回调函数，直到上传完成
   onChange = ({ file }:any) => {
    if(file.status==='done'){
- 
-    this.props.setCoverKey(file.key)
-    message.success('上传成功')
+   if( this.props.setCoverKey)this.props.setCoverKey(file.key)
+   console.log('fffrrrr');
+   
+   this.props.setFlag(false)
     //上传成功过后，把文件的key,设置某个字段的值
+    if(this.props.insertImage)this.props.insertImage(file.url)
+    //上传完成之后，如果需要url
+    message.success('上传成功')
+     
    }
+
+
+ 
   };
 
 
@@ -66,7 +74,7 @@ getExtraData = (file:any) => {
   };
 
   render() {
-    const { value,children,accept }:any = this.props;
+    const { value,accept, showUploadList}:any = this.props;
     const props = {
       name: 'file',
       accept:accept||'',
@@ -76,11 +84,12 @@ getExtraData = (file:any) => {
       data: this.getExtraData,
       beforeUpload: this.beforeUpload,
       listType:'picture',
-      maxCount:1
+      maxCount:1,
+      showUploadList: showUploadList
     };
     return (
       <Upload {...props}   >
-        <Button icon={<UploadOutlined />}>点击上传商品主图</Button>
+   {this.props.children}
       </Upload>
     );
   }
