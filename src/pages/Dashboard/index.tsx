@@ -40,7 +40,8 @@ const Dashboard = () => {
             max:5000,
             detail: {
                 formatter: '{value}',
-                width:200
+                width:500,
+                fontSize:20
             },
             data: [{
                 value: num,

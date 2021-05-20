@@ -10,7 +10,7 @@
           {
             name: 'login',
             path: '/login',
-            component: './login',
+            component: '@/pages/login',
           },
         ],
       },
@@ -30,8 +30,14 @@
               {
                 path: '/dashboard',
                 name:'dashboard',
-                icon:'PicCenterOutlined',
+                icon:'PieChartOutlined',
                 component:'@/pages/Dashboard'
+              },
+              {
+                path: '/classfiy',
+                name:'classfiy',
+                icon:'PicCenterOutlined',
+                component:'@/pages/Classification'
               },
               {
                 path: '/user',
@@ -47,18 +53,18 @@
               },
               
               {
-                component: './404',
+                component: '@/pages/404',
               },
             ],
           },
           {
-            component: './404',
+            component: '@/pages/404',
           },
         ],
       },
     ],
   },
   {
-    component: './404',
+    component: '@/pages/404',
   },
 ];
