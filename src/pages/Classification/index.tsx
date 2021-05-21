@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Modal, Button, Select, message,Skeleton } from 'antd';
+import React, { useEffect, useState, useRef } from 'react';
+import { Table, Modal, Button, Select, message, Skeleton } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { getCategory, addCategory, detailCategory } from '@/services/category';
+import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import { getCategory, addCategory, detailCategory,updateCategory } from '@/services/category';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
-import type { ProColumns } from '@ant-design/pro-table';
 type GithubIssueItem = {
   title: string;
   dataIndex: string;
@@ -13,12 +13,16 @@ type GithubIssueItem = {
 };
 
 function TreeData() {
+  const actionRef = useRef<ActionType>();
   const [res, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCategory, setIsCategory] = useState(false);
   const [formObj]: any = ProForm.useForm();
   const [isLoad, setisLoad] = useState(false);
-  const [goodsDetail, setgoodsDetail] = useState({});
+  const [goodsDetail, setgoodsDetail] = useState({
+    name: '',
+  });
+const [pid,setPid]=useState(0)
   useEffect(() => {
     initData();
   }, []);
@@ -35,39 +39,36 @@ function TreeData() {
     }
   };
 
-  //详情数据
-  const detailData = async (pid: any) => {
-    let res = await detailCategory(pid);
-   
-    if (res != undefined) {
-      setgoodsDetail({
-        name: res.name,
-      });
-      setIsCategory(true);
-      res = JSON.parse(JSON.stringify(res).replace(/id/g, 'key'));
-      console.log(res, 'tttt');
-    } else {
-      message.error('获取详情数据失败');
-    }
-  };
-  console.log(goodsDetail, 'ddeewww');
-
   const showModal = () => {
     setIsModalVisible(true);
   };
-
-  // const handleOk = () => {
-  //   setIsModalVisible(false);
-  // };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsCategory(false);
   };
   //修改操作
-  const showCate = (pid: any) => {
+  const showCate = async (pid: any) => {
+    setIsCategory(true);
+    setPid(pid)
+    if (pid != undefined) {
+      if (goodsDetail.name != '') {
+        setgoodsDetail({
+          name: '',
+        });
+      }
+      let res = await detailCategory(pid);
+      //让表单重置
+      goodsDetail.name = res.name;
+      setgoodsDetail({
+        ...goodsDetail,
+      });
+      formObj.resetFields();
+    } else {
+      message.error('获取详情数据失败');
+    }
+
     //调用详情数据
-    detailData(pid);
   };
   //添加操作
   const addSubmit = async (value: any) => {
@@ -83,8 +84,16 @@ function TreeData() {
   };
 
   //修改操作
-  const modifySubmit = (value: any) => {
-    console.log(value, 'ffff');
+  const modifySubmit = async(value: any) => {
+    const res=await updateCategory(pid,value)
+    if (res.status === undefined) {
+      message.success('修改成功');
+      initData();
+      setIsCategory(false);
+    } else {
+      message.error('修改失败');
+    }
+    
   };
   let options: any[] = [];
   res.forEach((item: any) => {
@@ -121,19 +130,20 @@ function TreeData() {
       ),
     },
   ];
-  // const goodsDetail={
-  //   name:'dddd',
-  //   pid:'dddd'
-  // }
-  console.log( goodsDetail,'ffffferrw');
-  
+
   return (
     <>
       <Button type="primary" onClick={showModal}>
         添加分类
       </Button>
       <div style={{ width: '100%', height: '30px' }}></div>
-      <Modal title="添加分类" visible={isModalVisible} onCancel={handleCancel} footer={null}>
+      <Modal
+        title="添加分类"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        destroyOnClose={true}
+      >
         <ProForm onFinish={(value: any) => addSubmit(value)} form={formObj}>
           <ProForm.Item
             className="item"
@@ -152,20 +162,30 @@ function TreeData() {
         </ProForm>
       </Modal>
 
-      <Modal title="修改分类" visible={isCategory} onCancel={handleCancel} footer={null}>
-      {/* <Skeleton active /> */}
-         <ProForm
-          onFinish={(value: any) => modifySubmit(value)}
-          form={formObj}
-          initialValues={{ ...goodsDetail }}
-        >
-          <ProFormText
-            name="name"
-            label="父类名称"
-            placeholder="请输入父类名称"
-            rules={[{ required: true, message: '请输入父类名称' }]}
-          />
-        </ProForm>
+      <Modal
+        title="修改分类"
+        visible={isCategory}
+        onCancel={handleCancel}
+        footer={null}
+        destroyOnClose={true}
+      >
+        {goodsDetail.name === '' ? (
+          <Skeleton active />
+        ) : (
+          <ProForm
+            onFinish={(value: any) => modifySubmit(value)}
+            form={formObj}
+            initialValues={{ ...goodsDetail }}
+          >
+            <ProFormText
+              shouldUpdate
+              name="name"
+              label="父类名称"
+              placeholder="请输入父类名称"
+              rules={[{ required: true, message: '请输入父类名称' }]}
+            />
+          </ProForm>
+        )}
       </Modal>
       <Table columns={columns} dataSource={res} loading={isLoad} />
     </>

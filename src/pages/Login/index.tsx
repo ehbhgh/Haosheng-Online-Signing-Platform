@@ -41,7 +41,7 @@ const Login: React.FC<LoginProps> = (props) => {
   useEffect(() => {
     //判断用户是否登录，如果登录则重定向到首页
     const userInfo=localStorage.getItem('userInfo')
-    if(userInfo) history.replace('/')
+    if(userInfo&&userInfo!=null) history.replace('/')
 
   }, [])
   const handleSubmit = (values: LoginParamsType) => {
