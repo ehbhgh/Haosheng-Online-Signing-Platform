@@ -52,11 +52,13 @@ const UserModel: UserModelType = {
       //查看本地的localstorage是否有用户信息，没有在请求
       const userInfo = localStorage.getItem('useInfo');
   
+      console.log( userInfo,'kkkk');
       
       let response = null;
       if (!userInfo) {
         //获取用户信息
         response = yield call(queryCurrent);
+        console.log(response,'ffffff');
         
         //把用户数据存入缓存
       localStorage.setItem('userInfo', JSON.stringify(response));

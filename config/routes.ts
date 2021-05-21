@@ -51,7 +51,12 @@
                 icon:'ShoppingCartOutlined',
                 component:'@/pages/Goods'
               },
-              
+              {
+                path: '/order',
+                name:'order',
+                icon:'DollarOutlined',
+                component:'@/pages/Order'
+              },
               {
                 component: '@/pages/404',
               },

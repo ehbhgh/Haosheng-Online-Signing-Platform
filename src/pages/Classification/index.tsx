@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState} from 'react';
 import { Table, Modal, Button, Select, message, Skeleton } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import type { ProColumns } from '@ant-design/pro-table';
 import { getCategory, addCategory, detailCategory,updateCategory } from '@/services/category';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 type GithubIssueItem = {
@@ -13,7 +13,6 @@ type GithubIssueItem = {
 };
 
 function TreeData() {
-  const actionRef = useRef<ActionType>();
   const [res, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCategory, setIsCategory] = useState(false);
